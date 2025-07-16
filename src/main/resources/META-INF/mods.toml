@@ -1,0 +1,22 @@
+modLoader="javafml"
+loaderVersion="[47,)" # Forge 1.20.1+ (47.x)
+
+license="MIT"
+
+[[mods]]
+modId="drinkordie"
+version="1.0.0"
+displayName="Drink Or Die"
+authors="YourName or Team"
+description='''Adds a hydration mechanic. Survive by drinking water!'''
+
+# Optional:
+logoFile="drinkordie_icon.png" # Muss in src/main/resources sein!
+
+# Dependencies (optional, Beispiel):
+# [[dependencies.drinkordie]]
+#    modId="forge"
+#    mandatory=true
+#    versionRange="[47,)"
+#    ordering="NONE"
+#    side="BOTH"
