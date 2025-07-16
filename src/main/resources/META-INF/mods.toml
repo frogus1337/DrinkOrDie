@@ -5,7 +5,7 @@ license="MIT"
 
 [[mods]]
 modId="drinkordie"
-version="1.0.0"
+version="0.0.3"
 displayName="Drink Or Die"
 authors="YourName or Team"
 description='''Adds a hydration mechanic. Survive by drinking water!'''
