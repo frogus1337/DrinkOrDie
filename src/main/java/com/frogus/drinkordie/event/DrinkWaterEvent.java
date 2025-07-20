@@ -24,8 +24,10 @@ public class DrinkWaterEvent {
 
     @SubscribeEvent
     public static void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
+
         if (!(event.getEntity() instanceof Player player)) return;
         ItemStack stack = event.getItem();
+        System.out.println("Item Used: " + stack);
 
         // Der Item-Name, z.B. "minecraft:water_bottle" oder "minecraft:potion"
         ResourceLocation itemId = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
@@ -33,9 +35,14 @@ public class DrinkWaterEvent {
         // Für Potions: Wasserflasche als eigenes Mapping
         if (stack.getItem() == Items.POTION && PotionUtils.getPotion(stack) == Potions.WATER)
             itemId = ResourceLocation.fromNamespaceAndPath("minecraft", "water_bottle");
+        System.out.println("itemID: " + itemId);
+        System.out.println("Potion: " + PotionUtils.getPotion(stack));
+
 
         // Werte aus Datenmap laden
+
         HydrationData data = DataMap.getForItem(itemId.toString());
+        System.out.println("Loaded data: hydration=" + data.hydration + ", temperature=" + data.temperature);
 
         // Hydration anpassen
         player.getCapability(PlayerHydrationProvider.HYDRATION_CAP).ifPresent(hydration -> {
@@ -45,6 +52,13 @@ public class DrinkWaterEvent {
         // Temperatur anpassen (wenn gewünscht)
         player.getCapability(PlayerTemperatureProvider.TEMPERATURE_CAP).ifPresent(temp -> {
             temp.setTemperature(temp.getTemperature() + data.temperature);
+
+            player.getCapability(PlayerHydrationProvider.HYDRATION_CAP).ifPresent(hydration -> {
+                System.out.println("Vorher: " + hydration.getHydration());
+                hydration.setHydration(hydration.getHydration() + data.hydration);
+                System.out.println("Nachher: " + hydration.getHydration());
+            });
+
         });
     }
 }

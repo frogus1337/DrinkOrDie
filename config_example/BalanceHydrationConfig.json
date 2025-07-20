@@ -1,0 +1,58 @@
+{
+  "drinkValues": {
+    "water_bottle": 25,
+    "salty_water_bottle": 5,
+    "dirty_water_bottle": 20,
+    "canteen": 15,
+    "camel_pack": 50,
+    "milk_bucket": 5,
+
+  "maxHydration": 100,
+  "minHydration": 0,
+
+
+
+  "jumpLoss": 0.1,
+  "standingLossPerTick": 0.006,
+  "walkingLossPerTick": 0.008,
+  "sprintingLossPerTick": 0.012,
+  "temperatureHydrationMultiplier": 0.07,
+  "effectThresholds": [
+    {
+      "min": 0,
+      "max": 5,
+      "slowness": 2,
+      "weakness": 2,
+      "miningFatigue": 2,
+      "damage": 2,
+      "damageCooldown": 40
+    },
+    {
+      "min": 5,
+      "max": 10,
+      "slowness": 1,
+      "weakness": 1,
+      "miningFatigue": 1,
+      "damage": 1,
+      "damageCooldown": 60
+    },
+    {
+      "min": 10,
+      "max": 25,
+      "slowness": 0,
+      "weakness": -1,
+      "miningFatigue": -1,
+      "damage": 0,
+      "damageCooldown": 0
+    },
+    {
+      "min": 25,
+      "max": 100,
+      "slowness": -1,
+      "weakness": -1,
+      "miningFatigue": -1,
+      "damage": 0,
+      "damageCooldown": 0
+    }
+  ]
+}
