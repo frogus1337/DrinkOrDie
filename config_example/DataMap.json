@@ -1,0 +1,13 @@
+{
+  "someConfigKey": "someValue",
+  "itemMapping": {
+    "dirty_water_bottle": {
+      "hydration": 6,
+      "sideEffect": "nausea"
+    },
+    "salty_water_bottle": {
+      "hydration": 3,
+      "sideEffect": "weakness"
+    }
+  }
+}

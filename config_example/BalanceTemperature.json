@@ -1,0 +1,65 @@
+{
+  "normal": 36.5,
+  "min": 28.0,
+  "max": 44.0,
+  "adjustFactor": 0.02,
+  "sprintBoost": 0.3,
+  "walkBoost": 0.1,
+  "fireBoost": 4.0,
+  "biomeTemperatureMultiplier": 1.1,
+  "lavaBoost": 3.0,
+  "altitudeColdFactor": 0.009,
+  "caveWarmFactor": 0.01,
+  "daytimeBonus": 0.2,
+  "nighttimePenalty": 0.2,
+  "directSunlightBonus": 0.5,
+  "hydrationPenaltyBelow50": 0.2,
+  "hydrationPenaltyBelow10": 0.5,
+  "effectThresholds": [
+    {
+      "min": 42.0,
+      "max": 44.0,
+      "effect": "severe heatstroke",
+      "damage": 4.0,
+      "slowness": 3,
+      "weakness": 3,
+      "nausea": 1
+    },
+    {
+      "min": 41.0,
+      "max": 42.0,
+      "effect": "heatstroke",
+      "damage": 2.0,
+      "slowness": 2,
+      "weakness": 2,
+      "nausea": 1
+    },
+    {
+      "min": 40.0,
+      "max": 41.0,
+      "effect": "severe fever",
+      "damage": 1.0,
+      "slowness": 1,
+      "weakness": 2,
+      "nausea": 1
+    },
+    {
+      "min": 39.0,
+      "max": 40.0,
+      "effect": "fever",
+      "damage": 0.0,
+      "slowness": 1,
+      "weakness": 1,
+      "nausea": -1
+    },
+    {
+      "min": 38.0,
+      "max": 39.0,
+      "effect": "high temperature",
+      "damage": 0.0,
+      "slowness": 0,
+      "weakness": 0,
+      "nausea": -1
+    }
+  ]
+}
