@@ -4,11 +4,15 @@ import com.frogus.drinkordie.core.DrinkOrDie;
 import com.frogus.drinkordie.data.BalanceTemperatureConfig;
 import com.frogus.drinkordie.temperature.PlayerTemperature;
 import com.frogus.drinkordie.temperature.PlayerTemperatureProvider;
+import com.frogus.drinkordie.hydration.PlayerHydration;
+import com.frogus.drinkordie.hydration.PlayerHydrationProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
@@ -18,7 +22,6 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = DrinkOrDie.MODID)
 public class TemperatureEvents {
 
-    // --- CAPABILITY ANHÄNGEN ---
     @SubscribeEvent
     public static void onAttachCapabilities(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof Player) {
@@ -50,7 +53,8 @@ public class TemperatureEvents {
 
             // Aktivitäten (aus JSON)
             if (player.isSprinting()) targetTemperature += BalanceTemperatureConfig.DATA.sprintBoost;
-            if (player.getDeltaMovement().horizontalDistanceSqr() > 0.002 && !player.isPassenger()) targetTemperature += BalanceTemperatureConfig.DATA.walkBoost;
+            if (player.getDeltaMovement().horizontalDistanceSqr() > 0.002 && !player.isPassenger())
+                targetTemperature += BalanceTemperatureConfig.DATA.walkBoost;
             if (player.isOnFire()) targetTemperature += BalanceTemperatureConfig.DATA.fireBoost;
 
             // Lava-Nähe
@@ -79,11 +83,17 @@ public class TemperatureEvents {
                     (int) player.getEyeY(),
                     (int) player.getZ()
             );
-
             boolean inSunlight = isDay && world.canSeeSky(eyePos) && !world.isRainingAt(eyePos);
             if (inSunlight) {
                 targetTemperature += BalanceTemperatureConfig.DATA.directSunlightBonus;
             }
+
+            // --- Hydration beeinflusst Temperatur-Ziel ---
+            float hydration = player.getCapability(PlayerHydrationProvider.HYDRATION_CAP)
+                    .map(PlayerHydration::getHydration)
+                    .orElse(100f);
+            if (hydration < 50f) targetTemperature += BalanceTemperatureConfig.DATA.hydrationPenaltyBelow50;
+            if (hydration < 10f) targetTemperature += BalanceTemperatureConfig.DATA.hydrationPenaltyBelow10;
 
             // --- Temperatur proportional angleichen ---
             float diff = targetTemperature - value;
@@ -95,7 +105,6 @@ public class TemperatureEvents {
 
             // Clamp
             value = Math.max(BalanceTemperatureConfig.DATA.min, Math.min(BalanceTemperatureConfig.DATA.max, value));
-
             temp.setTemperature(value);
 
             // Temperatur nach jedem Tick an den Client syncen:
@@ -105,8 +114,37 @@ public class TemperatureEvents {
                         new com.frogus.drinkordie.sync.SyncTemperaturePacket(value)
                 );
             }
+            //System.out.println("[TEMP] Thresholds: " + (BalanceTemperatureConfig.DATA.effectThresholds != null ? BalanceTemperatureConfig.DATA.effectThresholds.size() : "null"));
+            if (BalanceTemperatureConfig.DATA.effectThresholds != null) {
+                for (com.frogus.drinkordie.data.BalanceTemperatureData.EffectThreshold t : BalanceTemperatureConfig.DATA.effectThresholds) {
+                    //System.out.println("[TEMP] Schwelle geladen: min=" + t.min + " max=" + t.max + " eff=" + t.effect);
+                }
+            }
 
-            // (Optional: hier könntest du noch Effekte auslösen)
+            // --- Effekte aus effectThresholds anwenden (NEU, mit min & max) ---
+            if (BalanceTemperatureConfig.DATA.effectThresholds != null) {
+                for (com.frogus.drinkordie.data.BalanceTemperatureData.EffectThreshold t : BalanceTemperatureConfig.DATA.effectThresholds) {
+                    // Bereich trifft zu?
+                    if (value >= t.min && value < t.max) {
+                        // Slowness
+                        if (t.slowness >= 0)
+                            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, t.slowness, true, true));
+                        // Weakness
+                        if (t.weakness >= 0)
+                            player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, t.weakness, true, true));
+                        // Nausea/Confusion
+                        if (t.nausea >= 0)
+                            player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 60, t.nausea, true, true));
+                        // Schaden
+                        if (t.damage > 0 && player.tickCount % 60 == 0) {
+                            player.hurt(player.damageSources().starve(), t.damage);
+                        }
+                        //System.out.println("[TEMP-EFFECT] Applied: " + t.effect + " for temp " + value);
+
+                        break; // Nur einen Bereich pro Tick!
+                    }
+                }
+            }
         });
     }
 }

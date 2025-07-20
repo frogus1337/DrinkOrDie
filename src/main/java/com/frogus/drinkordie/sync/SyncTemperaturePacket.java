@@ -31,7 +31,6 @@ public class SyncTemperaturePacket {
             if (player != null) {
                 LazyOptional<PlayerTemperature> tempCap = player.getCapability(PlayerTemperatureProvider.TEMPERATURE_CAP);
                 tempCap.ifPresent(cap -> cap.setTemperature(msg.temperature));
-                System.out.println("CLIENT-PACKET: Temperature received: " + msg.temperature);
 
             }
         });

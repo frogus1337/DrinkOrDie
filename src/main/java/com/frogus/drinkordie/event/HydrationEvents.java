@@ -6,6 +6,8 @@ import com.frogus.drinkordie.core.DrinkOrDie;
 import com.frogus.drinkordie.network.DrinkOrDieNetwork;
 import com.frogus.drinkordie.data.BalanceHydrationConfig;
 import com.frogus.drinkordie.data.BalanceData;
+import com.frogus.drinkordie.temperature.PlayerTemperature;
+import com.frogus.drinkordie.temperature.PlayerTemperatureProvider;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
@@ -55,15 +57,23 @@ public class HydrationEvents {
         }
 
         player.getCapability(PlayerHydrationProvider.HYDRATION_CAP).ifPresent(hydration -> {
-            // -------- Hydration-Verbrauch pro Tick --------
-            float hydrationLoss = BalanceHydrationConfig.DATA.standingLossPerTick / 24f;
+            // -------- Temperaturbonus holen --------
+            float temperature = player.getCapability(PlayerTemperatureProvider.TEMPERATURE_CAP)
+                    .map(PlayerTemperature::getTemperature)
+                    .orElse(36.5f);
+
+            float baseLoss = BalanceHydrationConfig.DATA.standingLossPerTick / 24f;
             if (player.isSprinting()) {
-                hydrationLoss = BalanceHydrationConfig.DATA.sprintingLossPerTick / 12f;
+                baseLoss = BalanceHydrationConfig.DATA.sprintingLossPerTick / 12f;
             } else if (player.getDeltaMovement().horizontalDistanceSqr() > 0.001 && !player.isPassenger()) {
-                hydrationLoss = BalanceHydrationConfig.DATA.walkingLossPerTick / 16f;
+                baseLoss = BalanceHydrationConfig.DATA.walkingLossPerTick / 16f;
             }
 
-            float rest = hydrationRest.getOrDefault(uuid, 0.0f) + hydrationLoss;
+            // --- Temperatur-Bonus berechnen: z.B. +5% pro Grad über 36.5°C ---
+            float tempBonus = Math.max(0f, temperature - 36.5f) * BalanceHydrationConfig.DATA.temperatureHydrationMultiplier;
+            float totalHydrationLoss = baseLoss * (1.0f + tempBonus);
+
+            float rest = hydrationRest.getOrDefault(uuid, 0.0f) + totalHydrationLoss;
 
             if (rest >= 0.1f) {
                 int times = (int)(rest / 0.1f);
@@ -95,7 +105,7 @@ public class HydrationEvents {
                         if (t.damage > 0 && t.damageCooldown > 0 && player.tickCount % t.damageCooldown == 0) {
                             player.hurt(player.damageSources().starve(), t.damage);
                         }
-                        break; // Passenden Bereich gefunden, Rest überspringen!
+                        break;
                     }
                 }
             }

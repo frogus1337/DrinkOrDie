@@ -1,0 +1,14 @@
+{
+  "item.drinkordie.dirty_water_bottle": "Dirty Water Bottle",
+  "item.drinkordie.salty_water_bottle": "Salty Water Bottle",
+  "item.drinkordie.canteen": "Canteen",
+  "item.drinkordie.camel_pack": "Camel Pack",
+  "item.drinkordie.salt": "Salt",
+  "item.drinkordie.bottle_of_salt": "Bottle of Salt",
+
+  "item.drinkordie.dirty_water_bucket": "Bucket of Dirty Water",
+  "item.drinkordie.salty_water_bucket": "Bucket of Salty Water",
+
+  "fluid.drinkordie.dirty_water": "Dirty Water",
+  "fluid.drinkordie.salty_water": "Salty Water"
+}

@@ -17,13 +17,18 @@ public class BalanceTemperatureData {
     public float daytimeBonus = 0.2f;
     public float nighttimePenalty = 0.2f;
     public float directSunlightBonus = 0.5f;
-
+    public float hydrationPenaltyBelow50 = 0.2f;
+    public float hydrationPenaltyBelow10 = 0.5f;
 
     public List<EffectThreshold> effectThresholds;
 
     public static class EffectThreshold {
         public float min;
+        public float max;
         public String effect;
         public float damage;
+        public int slowness = -1;
+        public int weakness = -1;
+        public int nausea = -1;
     }
 }

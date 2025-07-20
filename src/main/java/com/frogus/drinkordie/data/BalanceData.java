@@ -8,6 +8,7 @@ public class BalanceData {
     public float sprintingLossPerTick = 0.2f;
     public float jumpLoss = 0.1f;
     public List<EffectThreshold> effectThresholds;
+    public float temperatureHydrationMultiplier = 0.05f;
 
     public static class EffectThreshold {
         public float min;

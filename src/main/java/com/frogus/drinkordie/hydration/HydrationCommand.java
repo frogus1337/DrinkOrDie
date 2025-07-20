@@ -22,6 +22,9 @@ public class HydrationCommand {
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         dispatcher.register(
+
+
+
                 Commands.literal("hydration")
                         // /hydration zeigt Wert an
                         .executes(context -> {
