@@ -4,14 +4,16 @@ import com.frogus.drinkordie.fluid.ModFluids;
 import com.frogus.drinkordie.item.ModItems;
 import com.frogus.drinkordie.core.DrinkOrDie;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -19,58 +21,115 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = DrinkOrDie.MODID)
 public class FillFluidEvent {
 
+    // Prüft auf "dirty_water" oder "salty_water" und sucht dabei ggf. nach unten nach einer Quelle (Vanilla-Logik!)
+    private static boolean tryFillCustomFluidBottle(Player player, Level level, ItemStack heldItem, BlockPos pos, BlockState blockState, PlayerInteractEvent event) {
+        if (player == null || heldItem == null || blockState == null) return false;
+
+        var fluidType = blockState.getFluidState().getType();
+
+        // --- DIRTY WATER ---
+        if (fluidType == ModFluids.DIRTY_WATER.get() || fluidType == ModFluids.DIRTY_WATER_FLOWING.get()) {
+            BlockPos posDown = pos.immutable();
+            boolean foundSource = false;
+
+            // Vanilla-Logik: Solange dirty_water oder dirty_water_flowing nach unten, suche nach Quelle
+            while (true) {
+                BlockState state = level.getBlockState(posDown);
+                var f = state.getFluidState().getType();
+                if (f == ModFluids.DIRTY_WATER.get()) {
+                    foundSource = true;
+                    break;
+                }
+                if (f == ModFluids.DIRTY_WATER_FLOWING.get()) {
+                    posDown = posDown.below();
+                    continue;
+                }
+                break; // anderes Fluid, Luft, Block -> keine Quelle gefunden
+            }
+
+            if (foundSource) {
+                if (!player.getAbilities().instabuild) {
+                    heldItem.shrink(1);
+                }
+                ItemStack bottle = new ItemStack(ModItems.DIRTY_WATER_BOTTLE.get());
+                if (!player.getInventory().add(bottle)) {
+                    player.drop(bottle, false);
+                }
+                level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 1.0F, 1.0F);
+                event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide));
+                event.setCanceled(true);
+                return true;
+            }
+        }
+
+        // --- SALTY WATER ---
+        if (fluidType == ModFluids.SALTY_WATER.get() || fluidType == ModFluids.SALTY_WATER_FLOWING.get()) {
+            BlockPos posDown = pos.immutable();
+            boolean foundSource = false;
+
+            while (true) {
+                BlockState state = level.getBlockState(posDown);
+                var f = state.getFluidState().getType();
+                if (f == ModFluids.SALTY_WATER.get()) {
+                    foundSource = true;
+                    break;
+                }
+                if (f == ModFluids.SALTY_WATER_FLOWING.get()) {
+                    posDown = posDown.below();
+                    continue;
+                }
+                break;
+            }
+
+            if (foundSource) {
+                if (!player.getAbilities().instabuild) {
+                    heldItem.shrink(1);
+                }
+                ItemStack bottle = new ItemStack(ModItems.SALTY_WATER_BOTTLE.get());
+                if (!player.getInventory().add(bottle)) {
+                    player.drop(bottle, false);
+                }
+                level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 1.0F, 1.0F);
+                event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide));
+                event.setCanceled(true);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-        Level level = event.getLevel();
-        BlockPos pos = event.getPos();
         Player player = event.getEntity();
+        Level level = event.getLevel();
         ItemStack heldItem = event.getItemStack();
 
-        // Nur wenn das gehaltene Item eine Glasflasche ist
-        if (heldItem.getItem() != Items.GLASS_BOTTLE)
-            return;
+        if (player == null || level.isClientSide) return;
+        if (heldItem.getItem() != Items.GLASS_BOTTLE) return;
 
-        // Prüfe den aktuellen Block und ggf. den Block darüber
-        tryFillBottleWithFluid(level, pos, player, heldItem, ModFluids.DIRTY_WATER.get(), new ItemStack(ModItems.DIRTY_WATER_BOTTLE.get()), event);
-        tryFillBottleWithFluid(level, pos, player, heldItem, ModFluids.SALTY_WATER.get(), new ItemStack(ModItems.SALTY_WATER_BOTTLE.get()), event);
+        BlockPos pos = event.getPos();
+        BlockState blockState = level.getBlockState(pos);
+
+        tryFillCustomFluidBottle(player, level, heldItem, pos, blockState, event);
     }
 
-    private static void tryFillBottleWithFluid(Level level, BlockPos pos, Player player, ItemStack heldItem,
-                                               net.minecraft.world.level.material.Fluid fluid, ItemStack resultBottle, PlayerInteractEvent.RightClickBlock event) {
-        BlockState state = level.getBlockState(pos);
+    @SubscribeEvent
+    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+        Player player = event.getEntity();
+        Level level = event.getLevel();
+        ItemStack heldItem = event.getItemStack();
 
-        // Prüfe auf Quellblock an angeklickter Position
-        if (state.getBlock() instanceof LiquidBlock && state.getFluidState().getType() == fluid && state.getFluidState().isSource()) {
-            fillBottle(level, pos, player, heldItem, resultBottle, event.getHand(), event);
+        if (player == null || level.isClientSide) return;
+        if (heldItem.getItem() != Items.GLASS_BOTTLE) return;
+
+        // Raytrace mit Flüssigkeiten!
+        HitResult hit = player.pick(5.0D, 0.0F, true);
+        if (hit.getType() == HitResult.Type.BLOCK) {
+            BlockPos pos = ((BlockHitResult) hit).getBlockPos();
+            BlockState blockState = level.getBlockState(pos);
+
+            tryFillCustomFluidBottle(player, level, heldItem, pos, blockState, event);
         }
-        // Prüfe auf Quellblock eins höher (z.B. wenn auf Flüssigkeit geklickt wurde)
-        else {
-            BlockPos above = pos.above();
-            BlockState aboveState = level.getBlockState(above);
-            if (aboveState.getBlock() instanceof LiquidBlock && aboveState.getFluidState().getType() == fluid && aboveState.getFluidState().isSource()) {
-                fillBottle(level, above, player, heldItem, resultBottle, event.getHand(), event);
-            }
-        }
-    }
-
-    private static void fillBottle(Level level, BlockPos pos, Player player, ItemStack heldItem,
-                                   ItemStack filledBottle, InteractionHand hand, PlayerInteractEvent.RightClickBlock event) {
-        if (!level.isClientSide) {
-            // Flasche verbrauchen
-            heldItem.shrink(1);
-
-            // Gefüllte Flasche ins Inventar, Hand oder droppen
-            if (heldItem.isEmpty()) {
-                player.setItemInHand(hand, filledBottle.copy());
-            } else if (!player.getInventory().add(filledBottle.copy())) {
-                player.drop(filledBottle.copy(), false);
-            }
-
-            // Flüssigkeits-Quellblock entfernen
-            level.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
-        }
-        event.setCanceled(true);
-        event.setCancellationResult(InteractionResult.SUCCESS);
-        player.swing(hand);
     }
 }

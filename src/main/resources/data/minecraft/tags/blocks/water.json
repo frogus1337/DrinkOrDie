@@ -1,7 +1,9 @@
 {
   "replace": false,
   "values": [
+    "drinkordie:salty_water",
+    "drinkordie:flowing_salty_water",
     "drinkordie:dirty_water",
-    "drinkordie:salty_water"
+    "drinkordie:flowing_dirty_water"
   ]
 }
