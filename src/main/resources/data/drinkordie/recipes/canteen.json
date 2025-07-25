@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LIL",
+    "LGL",
+    "LLL"
+  ],
+  "key": {
+    "L": { "item": "minecraft:leather" },
+    "I": { "item": "minecraft:iron_ingot" },
+    "G": { "item": "minecraft:glass_bottle" }
+  },
+  "result": {
+    "item": "drinkordie:canteen"
+  }
+}

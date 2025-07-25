@@ -9,6 +9,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.eventbus.api.IEventBus;
+import com.frogus.drinkordie.config.ModServerConfig;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
@@ -19,22 +20,24 @@ public class ModItems {
     public static final RegistryObject<Item> CANTEEN = ITEMS.register("canteen",
             () -> new Item(new Item.Properties().stacksTo(1).durability(10)));
     public static final RegistryObject<Item> CAMEL_PACK = ITEMS.register("camel_pack",
-            () -> new Item(new Item.Properties().stacksTo(1).durability(40)));
+            () -> new CamelPackItem());
+
     public static final RegistryObject<Item> SALT = ITEMS.register("salt",
             () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> BOTTLE_OF_SALT = ITEMS.register("bottle_of_salt",
-            () -> new Item(new Item.Properties().stacksTo(1)));
+            () -> new BottleOfSaltItem(new Item.Properties().stacksTo(16)));
+
 
     // Fluid-Buckets (Eimer)
     // com.frogus.drinkordie.item.ModItems
 
     public static final RegistryObject<Item> DIRTY_WATER_BUCKET = ITEMS.register("dirty_water_bucket",
             () -> new BucketItem(() -> ModFluids.DIRTY_WATER.get(),
-                    new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
+                    new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(16)));
 
     public static final RegistryObject<Item> SALTY_WATER_BUCKET = ITEMS.register("salty_water_bucket",
             () -> new BucketItem(() -> ModFluids.SALTY_WATER.get(),
-                    new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
+                    new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(16)));
 
     public static final RegistryObject<Item> DIRTY_WATER_BOTTLE = ITEMS.register("dirty_water_bottle",
             () -> new DrinkableDirtyWaterBottleItem());

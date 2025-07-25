@@ -17,6 +17,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
+import com.frogus.drinkordie.config.ModServerConfig;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
+import com.frogus.drinkordie.recipe.ModRecipeSerializers;
 
 @Mod(DrinkOrDie.MODID)
 public class DrinkOrDie {
@@ -37,6 +41,11 @@ public class DrinkOrDie {
         ModEffects.register(modEventBus);
 
 
+
+
+        //config
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ModServerConfig.SERVER_SPEC);
+
         // 2. Netzwerk
         DrinkOrDieNetwork.register();
 
@@ -50,6 +59,12 @@ public class DrinkOrDie {
             DrinkOrDieGeneralCommands.register(event.getDispatcher());
             TemperatureCommand.register(event.getDispatcher());
         });
+
+
+        ModRecipeSerializers.RECIPE_SERIALIZERS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        ModRecipeSerializers.RECIPE_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
+
+
 
         LOGGER.info("Drink Or Die loaded!");
     }

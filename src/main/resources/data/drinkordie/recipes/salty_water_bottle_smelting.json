@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "drinkordie:salty_water_bottle"
+  },
+  "result": "drinkordie:bottle_of_salt",
+  "experience": 0.2,
+  "cookingtime": 200
+}

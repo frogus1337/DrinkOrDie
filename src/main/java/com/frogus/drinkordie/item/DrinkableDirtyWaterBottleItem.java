@@ -14,7 +14,7 @@ import net.minecraft.world.item.UseAnim;
 
 public class DrinkableDirtyWaterBottleItem extends Item {
     public DrinkableDirtyWaterBottleItem() {
-        super(new Item.Properties().stacksTo(1));
+        super(new Item.Properties().stacksTo(16));
     }
 
     @Override
@@ -25,12 +25,22 @@ public class DrinkableDirtyWaterBottleItem extends Item {
             }
             // Optional: Effekte für schmutziges Wasser
             // player.addEffect(new MobEffectInstance(...));
+            if (!level.isClientSide) {
+                level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
+                        SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS, 1.0F, 1.0F);
+            }
+            // VANILLA-LOGIK: Immer eine Glasflasche geben
+            if (stack.isEmpty()) {
+                return new ItemStack(Items.GLASS_BOTTLE);
+            } else {
+                if (!player.getAbilities().instabuild) {
+                    player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE));
+                }
+                return stack;
+            }
         }
-        if (!level.isClientSide) {
-            level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
-                    SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS, 1.0F, 1.0F);
-        }
-        return stack.isEmpty() ? new ItemStack(Items.GLASS_BOTTLE) : stack;
+        // Falls kein Spieler (z.B. durch Dispenser): Vanilla-Verhalten
+        return stack;
     }
 
     @Override

@@ -1,3 +1,5 @@
+
+
 plugins {
     id 'eclipse'
     id 'idea'
@@ -5,7 +7,9 @@ plugins {
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
 }
 
-version = "0.0.3"
+
+
+version = "0.0.5"
 group = 'com.frogus.drinkordie'
 
 base {

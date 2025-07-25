@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "minecraft:dirt" },
+    { "item": "minecraft:glass_bottle" }
+  ],
+  "result": {
+    "item": "drinkordie:dirty_water_bottle"
+  }
+}

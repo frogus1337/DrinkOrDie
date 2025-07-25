@@ -8,6 +8,7 @@ import com.frogus.drinkordie.data.BalanceHydrationConfig;
 import com.frogus.drinkordie.data.BalanceData;
 import com.frogus.drinkordie.temperature.PlayerTemperature;
 import com.frogus.drinkordie.temperature.PlayerTemperatureProvider;
+import com.frogus.drinkordie.item.CamelPackItem;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,6 +18,8 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.entity.EquipmentSlot;
 
 import java.util.UUID;
 import java.util.WeakHashMap;
@@ -113,6 +116,26 @@ public class HydrationEvents {
             // "You feel dizzy..."-Message ab unter 10 Hydration (alle 6 Sekunden)
             if (hydrationValue < 10f && player.tickCount % 120 == 0) {
                 player.sendSystemMessage(net.minecraft.network.chat.Component.literal("You feel dizzy..."));
+            }
+
+            // ---------- Automatisches Trinken aus Camel Pack -----------
+            ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
+            if (chest != null && chest.getItem() instanceof CamelPackItem) {
+                int water = CamelPackItem.getWater(chest);
+                // Nur wenn Camel Pack Wasser enthält und Hydration < 99.96
+                if (water >= 1 && hydrationValue < 99.96f) {
+                    // Berechne, wie viel mB Wasser sinnvoll sind
+                    float maxFill = 100.0f - hydrationValue;
+                    int mbToDrink = Math.min(water, (int)Math.floor(maxFill / 0.03f));
+                    if (mbToDrink > 0) {
+                        CamelPackItem.setWater(chest, water - mbToDrink);
+                        hydration.setHydration(hydrationValue + mbToDrink * 0.03f);
+
+                        // Optional: nur alle 1000 Ticks Sound abspielen (ca. alle 50 sek)
+                        if (player.tickCount % 1000 == 0)
+                            player.level().playSound(null, player.blockPosition(), net.minecraft.sounds.SoundEvents.GENERIC_DRINK, net.minecraft.sounds.SoundSource.PLAYERS, 0.4F, 1F);
+                    }
+                }
             }
         });
     }
