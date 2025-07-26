@@ -1,5 +1,9 @@
 package com.frogus.drinkordie.item;
 
+import com.frogus.drinkordie.data.BalanceData;
+import com.frogus.drinkordie.data.BalanceHydrationConfig;
+import com.frogus.drinkordie.effect.ModEffects;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -23,18 +27,29 @@ public class DrinkableSaltyWaterBottleItem extends Item {
             if (!player.getAbilities().instabuild) {
                 stack.shrink(1);
             }
-            // Optional: Effekte für salziges Wasser
-            // player.addEffect(new MobEffectInstance(...));
+            // THIRST-EFFEKT für salty water bottle
             if (!level.isClientSide) {
+                BalanceData.EffectConfig thirstConfig = BalanceHydrationConfig.DATA.saltyBottleThirstEffect;
+                if (thirstConfig != null) {
+                    player.addEffect(new MobEffectInstance(
+                            ModEffects.THIRST.get(),
+                            thirstConfig.duration,
+                            thirstConfig.amplifier
+                    ));
+                }
                 level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
                         SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS, 1.0F, 1.0F);
             }
-            // VANILLA-LOGIK: Immer eine Glasflasche geben
+            // IMMER eine Glasflasche geben
             if (stack.isEmpty()) {
                 return new ItemStack(Items.GLASS_BOTTLE);
             } else {
                 if (!player.getAbilities().instabuild) {
-                    player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE));
+                    ItemStack bottle = new ItemStack(Items.GLASS_BOTTLE);
+                    boolean added = player.getInventory().add(bottle);
+                    if (!added) {
+                        player.drop(bottle, false);
+                    }
                 }
                 return stack;
             }

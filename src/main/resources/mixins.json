@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "com.frogus.drinkordie.mixin",
+  "mixins": [
+    "BottleItemMixin"
+  ],
+  "minVersion": "0.8.5",
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

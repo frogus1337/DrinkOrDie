@@ -1,0 +1,31 @@
+[
+  {
+    "block": "minecraft:lava",
+    "range": 6,
+    "temperatureBoost": 0.3
+  },
+  {
+    "block": "minecraft:campfire",
+    "range": 5,
+    "temperatureBoost": 0.2
+  },
+  {
+    "block": "minecraft:ice",
+    "range": 5,
+    "temperatureBoost": -0.05
+  },
+  {
+    "block": "minecraft:furnace",
+    "range": 5,
+    "temperatureBoost": 0.3,
+    "property": {
+      "lit": true
+    }
+  },
+  {
+    "block": "minecraft:torch",
+    "range": 5,
+    "temperatureBoost": 0.01
+
+  }
+]

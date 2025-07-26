@@ -37,7 +37,7 @@ public class ModServerConfig {
 
             vanillaBottlesRemoveSource = builder
                     .comment("Entfernen Vanilla-Wasserflaschen beim Befüllen die Wasserquelle? (true = Quelle verschwindet)")
-                    .define("vanillaBottlesRemoveSource", true);
+                    .define("vanillaBottlesRemoveSource", false);
 
             bottleMbContent = builder
                     .comment("Wieviel mB (Millibuckets) Flüssigkeit enthält eine Flasche? (Standard: 250, Vanilla-Bucket: 1000)")

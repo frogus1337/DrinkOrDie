@@ -21,6 +21,7 @@ import com.frogus.drinkordie.config.ModServerConfig;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import com.frogus.drinkordie.recipe.ModRecipeSerializers;
+import com.frogus.drinkordie.data.HeatSourceManager;
 
 @Mod(DrinkOrDie.MODID)
 public class DrinkOrDie {
@@ -41,6 +42,7 @@ public class DrinkOrDie {
         ModEffects.register(modEventBus);
 
 
+        HeatSourceManager.loadConfig();
 
 
         //config

@@ -10,6 +10,15 @@ public class BalanceData {
     public List<EffectThreshold> effectThresholds;
     public float temperatureHydrationMultiplier = 0.05f;
 
+    public static class EffectConfig {
+        public int duration;
+        public int amplifier;
+    }
+
+    public EffectConfig saltyBottleThirstEffect = new EffectConfig();
+    public EffectConfig dirtyBottlePoisonEffect = new EffectConfig();
+    public EffectConfig dirtyBottleHungerEffect = new EffectConfig();
+
     public static class EffectThreshold {
         public float min;
         public float max;

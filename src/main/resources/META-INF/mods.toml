@@ -13,6 +13,8 @@ description='''Adds a hydration mechanic. Survive by drinking water!'''
 # Optional:
 logoFile="drinkordie_icon.png" # Muss in src/main/resources sein!
 
+
+
 # Dependencies (optional, Beispiel):
 # [[dependencies.drinkordie]]
 #    modId="forge"

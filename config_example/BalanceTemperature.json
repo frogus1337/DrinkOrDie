@@ -2,7 +2,7 @@
   "normal": 36.5,
   "min": 28.0,
   "max": 44.0,
-  "adjustFactor": 0.02,
+  "adjustFactor": 0.004,
   "sprintBoost": 0.3,
   "walkBoost": 0.1,
   "fireBoost": 4.0,
@@ -17,7 +17,7 @@
   "hydrationPenaltyBelow10": 0.5,
   "effectThresholds": [
     {
-      "min": 42.0,
+      "min": 41.0,
       "max": 44.0,
       "effect": "severe heatstroke",
       "damage": 4.0,
@@ -26,8 +26,8 @@
       "nausea": 1
     },
     {
-      "min": 41.0,
-      "max": 42.0,
+      "min": 40.0,
+      "max": 41.0,
       "effect": "heatstroke",
       "damage": 2.0,
       "slowness": 2,
@@ -35,8 +35,8 @@
       "nausea": 1
     },
     {
-      "min": 40.0,
-      "max": 41.0,
+      "min": 39.0,
+      "max": 40,
       "effect": "severe fever",
       "damage": 1.0,
       "slowness": 1,
@@ -44,8 +44,8 @@
       "nausea": 1
     },
     {
-      "min": 39.0,
-      "max": 40.0,
+      "min": 38.5,
+      "max": 39,
       "effect": "fever",
       "damage": 0.0,
       "slowness": 1,
@@ -54,7 +54,7 @@
     },
     {
       "min": 38.0,
-      "max": 39.0,
+      "max": 38.5,
       "effect": "high temperature",
       "damage": 0.0,
       "slowness": 0,

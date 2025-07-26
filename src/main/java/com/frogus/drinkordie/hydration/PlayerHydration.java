@@ -1,29 +1,25 @@
 package com.frogus.drinkordie.hydration;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraftforge.common.util.INBTSerializable;
 
-public class PlayerHydration {
-    private float hydration = 100.0f;
+public class PlayerHydration implements INBTSerializable<CompoundTag> {
+    private float hydration = 100f;
 
-    // Getter
-    public float getHydration() {
-        return hydration;
+    public float getHydration() { return hydration; }
+    public void setHydration(float value) { hydration = Math.max(0f, Math.min(100f, value)); }
+
+    @Override
+    public CompoundTag serializeNBT() {
+        CompoundTag tag = new CompoundTag();
+        tag.putFloat("Hydration", hydration);
+        return tag;
     }
 
-    // Setter
-    public void setHydration(float hydration) {
-        this.hydration = Math.max(0.0f, Math.min(100.0f, hydration));
-    }
-
-    // NBT speichern
-    public void saveNBTData(CompoundTag nbt) {
-        nbt.putFloat("hydration", hydration);
-    }
-
-    // NBT laden
-    public void loadNBTData(CompoundTag nbt) {
-        if (nbt.contains("hydration")) {
-            hydration = nbt.getFloat("hydration");
+    @Override
+    public void deserializeNBT(CompoundTag nbt) {
+        if (nbt.contains("Hydration")) {
+            this.hydration = nbt.getFloat("Hydration");
         }
     }
 }

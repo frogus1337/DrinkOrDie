@@ -1,12 +1,9 @@
 package com.frogus.drinkordie.event;
 
-
 import com.frogus.drinkordie.core.DrinkOrDie;
 import com.frogus.drinkordie.data.DataMap;
 import com.frogus.drinkordie.data.HydrationData;
-import com.frogus.drinkordie.hydration.PlayerHydration;
 import com.frogus.drinkordie.hydration.PlayerHydrationProvider;
-import com.frogus.drinkordie.temperature.PlayerTemperature;
 import com.frogus.drinkordie.temperature.PlayerTemperatureProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -14,7 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -35,30 +31,24 @@ public class DrinkWaterEvent {
         // Für Potions: Wasserflasche als eigenes Mapping
         if (stack.getItem() == Items.POTION && PotionUtils.getPotion(stack) == Potions.WATER)
             itemId = ResourceLocation.fromNamespaceAndPath("minecraft", "water_bottle");
+
         System.out.println("itemID: " + itemId);
         System.out.println("Potion: " + PotionUtils.getPotion(stack));
 
-
         // Werte aus Datenmap laden
-
         HydrationData data = DataMap.getForItem(itemId.toString());
         System.out.println("Loaded data: hydration=" + data.hydration + ", temperature=" + data.temperature);
 
-        // Hydration anpassen
+        // Hydration anpassen (nur EINMAL!)
         player.getCapability(PlayerHydrationProvider.HYDRATION_CAP).ifPresent(hydration -> {
-            hydration.setHydration(hydration.getHydration() + data.hydration);
+            double before = hydration.getHydration();
+            hydration.setHydration((float) (before + data.hydration));
+            System.out.println("Hydration vorher: " + before + ", nachher: " + hydration.getHydration());
         });
 
-        // Temperatur anpassen (wenn gewünscht)
+        // Temperatur anpassen (falls nötig)
         player.getCapability(PlayerTemperatureProvider.TEMPERATURE_CAP).ifPresent(temp -> {
             temp.setTemperature(temp.getTemperature() + data.temperature);
-
-            player.getCapability(PlayerHydrationProvider.HYDRATION_CAP).ifPresent(hydration -> {
-                System.out.println("Vorher: " + hydration.getHydration());
-                hydration.setHydration(hydration.getHydration() + data.hydration);
-                System.out.println("Nachher: " + hydration.getHydration());
-            });
-
         });
     }
 }

@@ -9,7 +9,7 @@ plugins {
 
 
 
-version = "0.0.5"
+version = "0.0.6"
 group = 'com.frogus.drinkordie'
 
 base {
@@ -21,6 +21,8 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
+
+
     // The mappings can be changed at any time and must be in the following format.
     // Channel:   Version:
     // official   MCVersion             Official field/method names from Mojang mapping files
@@ -88,11 +90,13 @@ minecraft {
         client {
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', 'drinkordie'
+            args '--mixin', 'mixins.json'
+
         }
 
         server {
             property 'forge.enabledGameTestNamespaces', 'drinkordie'
-            args '--nogui'
+            args '--nogui', '--mixin', 'mixins.json'
         }
 
         // This run config launches GameTestServer and runs all registered gametests, then exits.
@@ -132,8 +136,9 @@ dependencies {
     // The "userdev" classifier will be requested and setup by ForgeGradle.
     // If the group id is "net.minecraft" and the artifact id is one of ["client", "server", "joined"],
     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    minecraft 'net.minecraftforge:forge:1.20.1-47.4.0'
 
+    // Sponge Mixin API (optional, für besseren IDE-Support)
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")

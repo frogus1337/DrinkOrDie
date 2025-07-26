@@ -1,5 +1,9 @@
 package com.frogus.drinkordie.item;
 
+import com.frogus.drinkordie.data.BalanceData;
+import com.frogus.drinkordie.data.BalanceHydrationConfig;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -23,18 +27,37 @@ public class DrinkableDirtyWaterBottleItem extends Item {
             if (!player.getAbilities().instabuild) {
                 stack.shrink(1);
             }
-            // Optional: Effekte für schmutziges Wasser
-            // player.addEffect(new MobEffectInstance(...));
+            // POISON und HUNGER Effekte aus Config
             if (!level.isClientSide) {
+                BalanceData.EffectConfig poisonConfig = BalanceHydrationConfig.DATA.dirtyBottlePoisonEffect;
+                BalanceData.EffectConfig hungerConfig = BalanceHydrationConfig.DATA.dirtyBottleHungerEffect;
+                if (poisonConfig != null) {
+                    player.addEffect(new MobEffectInstance(
+                            MobEffects.POISON,
+                            poisonConfig.duration,
+                            poisonConfig.amplifier
+                    ));
+                }
+                if (hungerConfig != null) {
+                    player.addEffect(new MobEffectInstance(
+                            MobEffects.HUNGER,
+                            hungerConfig.duration,
+                            hungerConfig.amplifier
+                    ));
+                }
                 level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
                         SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS, 1.0F, 1.0F);
             }
-            // VANILLA-LOGIK: Immer eine Glasflasche geben
+            // IMMER eine Glasflasche geben
             if (stack.isEmpty()) {
                 return new ItemStack(Items.GLASS_BOTTLE);
             } else {
                 if (!player.getAbilities().instabuild) {
-                    player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE));
+                    ItemStack bottle = new ItemStack(Items.GLASS_BOTTLE);
+                    boolean added = player.getInventory().add(bottle);
+                    if (!added) {
+                        player.drop(bottle, false);
+                    }
                 }
                 return stack;
             }

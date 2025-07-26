@@ -6,6 +6,7 @@ import com.frogus.drinkordie.core.DrinkOrDie;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraft.server.level.ServerPlayer;
 
 public class DrinkOrDieNetwork {
     private static final String PROTOCOL_VERSION = "1";
@@ -16,6 +17,10 @@ public class DrinkOrDieNetwork {
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals
     );
+
+    public static void sendHydrationUpdate(ServerPlayer player, float hydration) {
+        INSTANCE.sendTo(new SyncHydrationPacket(hydration), player.connection.connection, net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT);
+    }
 
     public static void register() {
         int id = 0;

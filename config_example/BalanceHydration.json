@@ -1,11 +1,5 @@
 {
   "drinkValues": {
-    "water_bottle": 25,
-    "salty_water_bottle": 5,
-    "dirty_water_bottle": 20,
-    "canteen": 15,
-    "camel_pack": 50,
-    "milk_bucket": 5
   },
 
   "maxHydration": 100,
@@ -16,6 +10,20 @@
   "walkingLossPerTick": 0.008,
   "sprintingLossPerTick": 0.012,
   "temperatureHydrationMultiplier": 0.07,
+
+  "dirtyBottlePoisonEffect": {
+    "duration": 160,
+    "amplifier": 0
+  },
+  "dirtyBottleHungerEffect": {
+    "duration": 160,
+    "amplifier": 0
+  },
+  "saltyBottleThirstEffect": {
+    "duration": 400,
+    "amplifier": 3
+  },
+
   "effectThresholds": [
     {
       "min": 0,
@@ -23,7 +31,7 @@
       "slowness": 2,
       "weakness": 2,
       "miningFatigue": 2,
-      "damage": 2,
+      "damage": 4,
       "damageCooldown": 40
     },
     {
